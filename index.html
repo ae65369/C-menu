@@ -1,30 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe Analyzer (Interactive Task)</title>
+    <title>Global Menu Explorer 🌍</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Smart Recipe Categorizer 🧪</h1>
-        <p>Enter your recipe ingredients below to get an instant category analysis.</p>
+        <h1>🌍 المستكشف الذكي لقوائم الطعام</h1>
+        <p>اختر الدولة لعرض أفضل قائمة طعام (Best Menu) موصى بها هناك.</p>
     </header>
 
     <main>
-        <section class="input-section">
-            <label for="recipe-input">Recipe Ingredients (one per line):</label>
-            <textarea id="recipe-input" rows="10" placeholder="e.g., Chicken breast, broccoli, olive oil, salt..."></textarea>
-            <button id="analyze-button">Analyze Recipe</button>
+        <section class="control-panel">
+            <label for="country-select">اختر الدولة:</label>
+            <select id="country-select">
+                <option value="">-- اختر دولة --</option>
+                <option value="egypt">مصر 🇪🇬</option>
+                <option value="saudi">السعودية 🇸🇦</option>
+                <option value="italy">إيطاليا 🇮🇹</option>
+                <option value="usa">أمريكا 🇺🇸</option>
+            </select>
         </section>
 
-        <section class="output-section">
-            <h2>Analysis Result:</h2>
-            <div id="result-box">
-                <p id="category-output">Awaiting input...</p>
-                <p id="details-output"></p>
-            </div>
+        <section id="menu-display">
+            <h2 id="menu-title">الرجاء اختيار دولة...</h2>
+            <div id="menu-items-container" class="grid-container">
+                </div>
         </section>
     </main>
 
