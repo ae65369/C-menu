@@ -1,74 +1,60 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Get references to the HTML elements
-    const inputElement = document.getElementById('recipe-input');
-    const analyzeButton = document.getElementById('analyze-button');
-    const categoryOutput = document.getElementById('category-output');
-    const detailsOutput = document.getElementById('details-output');
+// قاعدة بيانات المنيو (أفضل الأطباق لكل دولة)
+const menusDB = {
+    egypt: [
+        { dish: "كشري", restaurant: "أبو طارق", price: "50 EGP", rating: "⭐⭐⭐⭐⭐" },
+        { dish: "مشويات مشكلة", restaurant: "صبحي كابر", price: "350 EGP", rating: "⭐⭐⭐⭐⭐" },
+        { dish: "حمام محشي", restaurant: "فرحات", price: "180 EGP", rating: "⭐⭐⭐⭐" },
+        { dish: "فطير مشلتت", restaurant: "المنوفي", price: "120 EGP", rating: "⭐⭐⭐⭐" }
+    ],
+    saudi: [
+        { dish: "كبسة دجاج", restaurant: "الرومانسية", price: "45 SAR", rating: "⭐⭐⭐⭐⭐" },
+        { dish: "مندي لحم", restaurant: "السدة", price: "85 SAR", rating: "⭐⭐⭐⭐⭐" },
+        { dish: "مسحب", restaurant: "البيك", price: "18 SAR", rating: "⭐⭐⭐⭐⭐" },
+        { dish: "جريش", restaurant: "القرية النجدية", price: "40 SAR", rating: "⭐⭐⭐⭐" }
+    ],
+    italy: [
+        { dish: "بيتزا مارجريتا", restaurant: "Da Michele", price: "8 €", rating: "⭐⭐⭐⭐⭐" },
+        { dish: "باستا كاربونارا", restaurant: "Roscioli", price: "15 €", rating: "⭐⭐⭐⭐" },
+        { dish: "ريزوتو", restaurant: "Osteria Francescana", price: "40 €", rating: "⭐⭐⭐⭐⭐" }
+    ],
+    usa: [
+        { dish: "برجر كلاسيك", restaurant: "Shake Shack", price: "12 $", rating: "⭐⭐⭐⭐" },
+        { dish: "ستيك ريب آي", restaurant: "Peter Luger", price: "60 $", rating: "⭐⭐⭐⭐⭐" },
+        { dish: "أجنحة دجاج", restaurant: "Buffalo Wild Wings", price: "15 $", rating: "⭐⭐⭐⭐" }
+    ]
+};
 
-    // 2. Define the core analysis logic (simulating AI classification)
-    function analyzeRecipe(ingredientsText) {
-        // Convert the input text to lowercase and split it into individual words/ingredients
-        const ingredients = ingredientsText.toLowerCase().split(/[,\n\s]+/g).filter(word => word.length > 0);
+// الإمساك بعناصر الصفحة
+const countrySelect = document.getElementById('country-select');
+const menuContainer = document.getElementById('menu-items-container');
+const menuTitle = document.getElementById('menu-title');
+
+// وظيفة لعرض المنيو بناءً على الاختيار
+countrySelect.addEventListener('change', function() {
+    const selectedCountry = this.value;
+    menuContainer.innerHTML = ""; // مسح المحتوى القديم
+
+    if (selectedCountry && menusDB[selectedCountry]) {
+        // تغيير العنوان
+        const countryName = this.options[this.selectedIndex].text;
+        menuTitle.textContent = `أفضل قائمة طعام في: ${countryName}`;
+
+        // جلب البيانات وإنشاء البطاقات
+        const items = menusDB[selectedCountry];
         
-        // Define classification keywords (this is the "intelligence" part)
-        const categories = {
-            'Vegetarian': ['tofu', 'beans', 'lentils', 'spinach', 'zucchini', 'vegetable', 'broccol', 'mushroom'],
-            'High-Protein': ['chicken', 'beef', 'steak', 'pork', 'tuna', 'eggs', 'quinoa', 'whey'],
-            'Dessert/Sweet': ['sugar', 'chocolate', 'flour', 'butter', 'vanilla', 'cream', 'cake', 'cookies'],
-            'Low-Carb': ['lettuce', 'avocado', 'keto', 'cauliflower', 'asparagus', 'nuts']
-        };
-
-        let resultCategory = 'Unclassified/General Meal';
-        let matchedKeywords = [];
-
-        // Check against each category
-        for (const category in categories) {
-            const keywords = categories[category];
-            
-            // Find common words between the user's ingredients and the category keywords
-            const matches = ingredients.filter(ing => keywords.some(keyword => ing.includes(keyword)));
-            
-            if (matches.length >= 2) { 
-                // A simple rule: if at least 2 key ingredients match, assign the category
-                resultCategory = category;
-                matchedKeywords = matches;
-                break; // Found the best fit, stop checking
-            }
-        }
-
-        // 3. Prepare the analysis output
-        let categoryDetail = `Keywords matched: ${matchedKeywords.join(', ') || 'None found.'}`;
-
-        return { category: resultCategory, details: categoryDetail };
+        items.forEach(item => {
+            // إنشاء كود HTML لكل طبق
+            const card = document.createElement('div');
+            card.className = 'food-card';
+            card.innerHTML = `
+                <div class="dish-name">${item.dish}</div>
+                <div class="restaurant-name">🏛️ مطعم: ${item.restaurant}</div>
+                <div class="price">💰 السعر: ${item.price}</div>
+                <div class="rating">${item.rating}</div>
+            `;
+            menuContainer.appendChild(card);
+        });
+    } else {
+        menuTitle.textContent = "الرجاء اختيار دولة لعرض المنيو";
     }
-
-    // 4. Attach the event listener to the button
-    analyzeButton.addEventListener('click', () => {
-        const userInput = inputElement.value.trim();
-
-        if (userInput === '') {
-            categoryOutput.textContent = 'Please enter some ingredients to analyze.';
-            detailsOutput.textContent = '';
-            return;
-        }
-
-        // Perform the simulated analysis
-        const analysis = analyzeRecipe(userInput);
-
-        // Display the results to the user
-        categoryOutput.textContent = `Category: ${analysis.category}`;
-        detailsOutput.textContent = analysis.details;
-        
-        // Change color based on the output for visual feedback
-        const resultBox = document.getElementById('result-box');
-        if (analysis.category.includes('Dessert')) {
-            resultBox.style.borderLeftColor = '#f39c12'; // Orange for dessert
-        } else if (analysis.category.includes('Protein')) {
-            resultBox.style.borderLeftColor = '#3498db'; // Blue for protein
-        } else if (analysis.category.includes('Vegetarian')) {
-            resultBox.style.borderLeftColor = '#2ecc71'; // Green for vegetarian
-        } else {
-            resultBox.style.borderLeftColor = '#bdc3c7'; // Grey default
-        }
-    });
 });
